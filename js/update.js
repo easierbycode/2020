@@ -60,7 +60,7 @@ export function processEachStep() {
     // Jump if key is down and player is not jumping
     if (Properties.holdsUp() && !Properties.playerState.jumping && Properties.playerStands()) {
         // Jump
-        let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * Properties.player.height
+        let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * Properties.player.displayHeight
         player.setVelocityY(velocityY)
         // Set jump animation
         playerSpriteJump()

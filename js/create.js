@@ -124,12 +124,12 @@ function createPlayer() {
     // Player position
     let positionX = 0, positionY = Properties.foregroundY() * 0.8
     // Create player with physics body
-    let player = this.physics.add.sprite(positionX, positionY, 'player-idle')
+    let player = this.physics.add.sprite(positionX, positionY, 'player-idle').setScale(3)
     // Set colliding with world bounds
     player.setCollideWorldBounds(true)
     // Update body size
-    player.setBodySize(player.width * 0.6, player.height * 0.9)
-    player.setOffset(player.width * 0.2, player.height * 0.1)
+    // player.setBodySize(player.width * 0.6, player.height * 0.9)
+    // player.setOffset(player.width * 0.2, player.height * 0.1)
     // Set depth – foreground main
     player.setDepth(Constants.DEPTH.important)
     // Animate fall

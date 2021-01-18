@@ -182,7 +182,8 @@ export function addGameWinLayer() {
     let line5 = Properties.scene.add.bitmapText(0, line4.y + donateSize * 1.4, 'dark', lines[4], donateSize)
     let donateButton = Properties.scene.add.image(0, line5.y + donateSize + 2 * offsetY, 'donate').setScale(btnScale)
     // Combine and update origin
-    let items = [rect1, rect2, title1, title2, line1, line2, line3, line4, line5, donateButton]
+    // let items = [rect1, rect2, title1, title2, line1, line2, line3, line4, line5, donateButton]
+    let items = [rect1, rect2, title1, title2]
     for (const item of items) { item.setOrigin(0.5, 0) }
     // Interactions
     donateButton.setInteractive().setScrollFactor(0)

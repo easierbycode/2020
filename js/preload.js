@@ -102,13 +102,13 @@ function preloadPlayer() {
     // Load player sprites for different postfixes
     ['', '-koala', '-mask'].forEach(postfix => {
         this.load.spritesheet(`player-idle${postfix}`, `${CDN_URL}/assets/player/idle${postfix}.png`, {
-            frameWidth: 88, frameHeight: 128, margin: 1, spacing: 2
+            frameWidth: 23, frameHeight: 45
         })
         this.load.spritesheet(`player-run${postfix}`, `${CDN_URL}/assets/player/run${postfix}.png`, {
-            frameWidth: 88, frameHeight: 128, margin: 1, spacing: 2
+            frameWidth: 25, frameHeight: 45
         })
         this.load.spritesheet(`player-jump${postfix}`, `${CDN_URL}/assets/player/jump${postfix}.png`, {
-            frameWidth: 88, frameHeight: 128, margin: 1, spacing: 2
+            frameWidth: 34, frameHeight: 45
         })
     })
 }
@@ -163,8 +163,8 @@ function preloadButtons() {
 }
 
 function preloadLevel0() {
-    this.load.spritesheet('0-bird', `${CDN_URL}/assets/level0/bird.png`, {
-        frameWidth: 64, frameHeight: 64, margin: 1, spacing: 2
+    this.load.spritesheet('0-bird', `${CDN_URL}/assets/level0/godpigeon.png`, {
+        frameWidth: 38, frameHeight: 25
     })
 }
 

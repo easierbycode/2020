@@ -18,13 +18,13 @@ export function initAnimations() {
         Properties.scene.anims.create({
             key: `jump${postfix}`,
             frames: `player-jump${postfix}`,
-            frameRate: 10
+            frameRate: 5
         })
     })
     // Fall animation for player withou mask or koala
     Properties.scene.anims.create({
         key: 'fall',
-        frames: Properties.scene.anims.generateFrameNumbers('player-jump', { start: 4, end: 5 }),
+        frames: Properties.scene.anims.generateFrameNumbers('player-jump', { start: 1, end: 2 }),
         frameRate: 10,
         repeat: -1
     })

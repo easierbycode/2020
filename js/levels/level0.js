@@ -23,12 +23,12 @@ export default {
         // Add bird to a distance from player's position
         let initialY = Properties.sceneSize.height * 0.2
         let initialX = Properties.player.x + Properties.sceneSize.width
-        let bird = Properties.scene.add.sprite(initialX, initialY, '0-bird')
+        let bird = Properties.scene.add.sprite(initialX, initialY, '0-bird').setScale(2)
         // Create animation for the bird
         if (!Properties.scene.anims.exists('0-bird')) {
             Properties.scene.anims.create({
                 key: '0-bird',
-                frames: Properties.scene.anims.generateFrameNumbers('0-bird', { start: 0, end: 7 }),
+                frames: Properties.scene.anims.generateFrameNumbers('0-bird', { start: 0, end: 3 }),
                 frameRate: 10,
                 repeat: -1
             })

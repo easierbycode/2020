@@ -83,6 +83,9 @@ function initGame(gameWidth, gameHeight, scale) {
                 // Show canvas
                 document.body.classList.add('loaded')
             }
+        },
+        render: {
+            pixelArt: true
         }
     }
 
