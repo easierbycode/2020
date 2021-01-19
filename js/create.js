@@ -124,7 +124,7 @@ function createPlayer() {
     // Player position
     let positionX = 0, positionY = Properties.foregroundY() * 0.8
     // Create player with physics body
-    let player = this.physics.add.sprite(positionX, positionY, 'player-idle').setScale(3)
+    let player = this.physics.add.sprite(positionX, positionY, 'player-idle')
     // Set colliding with world bounds
     player.setCollideWorldBounds(true)
     // Update body size

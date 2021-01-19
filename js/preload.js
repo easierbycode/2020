@@ -102,13 +102,13 @@ function preloadPlayer() {
     // Load player sprites for different postfixes
     ['', '-koala', '-mask'].forEach(postfix => {
         this.load.spritesheet(`player-idle${postfix}`, `${CDN_URL}/assets/player/idle${postfix}.png`, {
-            frameWidth: 23, frameHeight: 45
+            frameWidth: 102, frameHeight: 135
         })
         this.load.spritesheet(`player-run${postfix}`, `${CDN_URL}/assets/player/run${postfix}.png`, {
-            frameWidth: 25, frameHeight: 45
+            frameWidth: 90, frameHeight: 135
         })
         this.load.spritesheet(`player-jump${postfix}`, `${CDN_URL}/assets/player/jump${postfix}.png`, {
-            frameWidth: 34, frameHeight: 45
+            frameWidth: 102, frameHeight: 135
         })
     })
 }
