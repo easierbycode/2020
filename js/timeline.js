@@ -14,6 +14,7 @@ const HANDLERS = {
     '0-load': Level0.preloadLevel,
     '0-checkpoint0': Level0.checkpoint0,
     '0-title': Level0.showTitle,
+    '0-ball': Level0.throwBall,
     // Level 1
     '1-load': Level1.preloadLevel,
     '1-checkpoint1': Level1.checkpoint1,

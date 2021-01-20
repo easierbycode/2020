@@ -28,4 +28,15 @@ export function initAnimations() {
         frameRate: 10,
         repeat: -1
     })
+    // Throw animation for player without mask or koala
+    Properties.scene.anims.create({
+        key: 'throw',
+        frames: [
+            {key: 'player-throw', frame: 0},
+            {key: 'player-throw', frame: 1},
+            {key: 'player-throw', frame: 2},
+            {key: 'player-throw', frame: 1}
+        ],
+        frameRate: 5
+    })
 }

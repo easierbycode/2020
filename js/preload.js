@@ -111,6 +111,10 @@ function preloadPlayer() {
             frameWidth: 102, frameHeight: 135
         })
     })
+
+    this.load.spritesheet(`player-throw`, `${CDN_URL}/assets/player/throw.png`, {
+        frameWidth: 102, frameHeight: 135
+    })
 }
 
 function preloadAudio() {
@@ -163,6 +167,8 @@ function preloadButtons() {
 }
 
 function preloadLevel0() {
+    this.load.image('0-ball', `${CDN_URL}/assets/level0/tennisball.png`)
+
     this.load.spritesheet('0-bird', `${CDN_URL}/assets/level0/godpigeon.png`, {
         frameWidth: 38, frameHeight: 25
     })

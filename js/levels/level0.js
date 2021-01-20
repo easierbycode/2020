@@ -1,12 +1,23 @@
 import AudioManager from '../audio.js'
 import Constants from '../constants.js'
 import Properties from '../properties.js'
-import { fadeInOutTitle } from '../helpers.js'
+import { fadeInOutTitle, playerSpriteThrow } from '../helpers.js'
+
+// Additional processing of sprites from tilemap
+const PROCESSING = {
+    '0-ball': saveBall
+}
+
+// Tennis ball sprite
+let ball
+
 
 export default {
     preloadLevel: function() {
         Properties.map.getObjectLayer('level0').objects.forEach(image => {
-            Properties.addMapImage(image)
+            let sprite = Properties.addMapImage(image)
+
+            if (image.name in PROCESSING)  PROCESSING[image.name](sprite)
         })
         // Intro music
         AudioManager.base.intro = Properties.scene.sound.add('intro', { loop: true })
@@ -50,5 +61,21 @@ export default {
     },
     showTitle: function() {
         fadeInOutTitle('2019')
+    },
+    throwBall: function() {
+        // Get control
+        Properties.takeControl()
+
+        Properties.scene.time.delayedCall(500, () => {
+            ball.destroy()
+            
+            playerSpriteThrow()
+
+            Properties.scene.time.delayedCall(500, () => { Properties.giveControl() })
+        })
     }
+}
+
+function saveBall(sprite) {
+    ball = sprite
 }

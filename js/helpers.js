@@ -29,6 +29,10 @@ export function playerSpriteJump() {
     Properties.player.anims.play('jump' + playerSpritePostfix())
 }
 
+export function playerSpriteThrow() {
+    Properties.player.anims.play('throw')
+}
+
 export function addBounceTween(object) {
     return Properties.scene.tweens.add({
         targets: object,
