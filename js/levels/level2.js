@@ -17,6 +17,7 @@ const PROCESSING_NAME = {
     '2-bread': addToProductsGroup,
     '2-bottle': addToProductsGroup,
     '2-milk': addToProductsGroup,
+    '2-roblox-card': addToProductsGroup,
     '2-toilet': addToProductsGroup
 }
 const PROCESSING_TYPE = {

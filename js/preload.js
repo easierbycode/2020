@@ -239,6 +239,7 @@ function preloadLevel2() {
     this.load.image('2-bread', `${CDN_URL}/assets/level2/products/bread.png`)
     this.load.image('2-bottle', `${CDN_URL}/assets/level2/products/bottle.png`)
     this.load.image('2-milk', `${CDN_URL}/assets/level2/products/milk.png`)
+    this.load.image('2-roblox-card', `${CDN_URL}/assets/level2/products/roblox-card.png`)
     this.load.image('2-toilet', `${CDN_URL}/assets/level2/products/toilet.png`)
     // Bat sprite
     this.load.spritesheet('2-bat', `${CDN_URL}/assets/level2/bat.png`, {
