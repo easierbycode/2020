@@ -8,9 +8,11 @@ const PROCESSING = {
     'c-mask': processMask,
     'c-corona': processCorona,
     'c-bush': bush => bush.setDepth(Constants.DEPTH.foregroundMain),
+    '3-cat': processCat,
     '3-closed': rotateClosed,
     '3-home': processHome,
     '3-home-wall1': processHomeWall,
+    '3-owl': processOwl,
     '3-home-wall2': processHomeWall,
     '3-toilet': processToiletItem,
     '3-turtle': processTurtle,
@@ -21,8 +23,12 @@ const PROCESSING = {
 // Acceleration for falling stocks
 const STOCK_ACCELERATION = 300
 
+// Cat
+let cat
 // Home walls
 let homeWalls
+// Owl
+let owl
 // Array for toilet papers
 let toiletItems
 // Turtle sprite
@@ -105,6 +111,10 @@ export default {
                     homeWalls.forEach(wall => wall.body.enable = false)
                     // Stop clock
                     AudioManager.stop('clock')
+                    // Cat takes off when door opens
+                    cat.flipX = true
+                    cat.anims.play('3-cat-run')
+                    cat.body.setVelocityX(700)
                 } else {
                     // Remove toilet and destroy
                     let toilet = toiletItems.pop()
@@ -237,6 +247,26 @@ function processHomeWall(wall) {
     homeWalls.push(wall)
 }
 
+function processOwl(owlImage) {
+    let {x, y} = owlImage
+    owlImage.destroy()
+    owl = Properties.scene.add.sprite(x, y, '3-owl').setScale(2)
+    // Set origin
+    owl.setOrigin(0, 1)
+    // Create animation for the owl
+    if (!Properties.scene.anims.exists('3-owl')) {
+        Properties.scene.anims.create({
+            key: '3-owl',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl', { start: 0, end: 3 }),
+            frameRate: 4,
+            repeat: -1,
+            yoyo: true
+        })
+    }
+    // Play animation
+    owl.anims.play('3-owl')
+}
+
 function processToiletItem(toiletItem) {
     // Set depth
     toiletItem.setDepth(Constants.DEPTH.foregroundMain)
@@ -268,4 +298,39 @@ function processTurtle(turtleImage) {
     turtle.anims.play('3-turtle')
     // Move turtle to the right
     turtle.body.setVelocityX(1)
+}
+
+function processCat(catImage) {
+    let {x, y} = catImage
+    catImage.destroy()
+    cat = Properties.scene.physics.add.sprite(x, y, '3-cat')
+    // Set colliding with world bounds
+    cat.setCollideWorldBounds(true)
+    // Cat collides with the ground
+    let foreground = Properties.map.getLayer('foreground').tilemapLayer
+    Properties.scene.physics.add.collider(cat, foreground)
+    // Set origin and refresh body
+    cat.setOrigin(0, 1).refreshBody()
+    // Create animation for the cat
+    if (!Properties.scene.anims.exists('3-cat')) {
+        Properties.scene.anims.create({
+            key: '3-cat',
+            frames: Properties.scene.anims.generateFrameNumbers('3-cat', { start: 0, end: 3 }),
+            frameRate: 5,
+            repeat: -1,
+            repeatDelay: 6000
+        })
+    }
+    if (!Properties.scene.anims.exists('3-cat-run')) {
+        Properties.scene.anims.create({
+            key: '3-cat-run',
+            frames: Properties.scene.anims.generateFrameNumbers('3-cat-run', { start: 0, end: 2 }),
+            frameRate: 5,
+            repeat: -1
+        })
+    }
+    // Play animation
+    cat.anims.play('3-cat')
+    // Move cat to the right
+    // cat.body.setVelocityX(1)
 }
