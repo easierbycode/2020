@@ -184,22 +184,22 @@ export function addGameWinLayer() {
     let line3 = Properties.scene.add.bitmapText(0, line2.y + donateSize * 1.4, 'dark', lines[2], donateSize)
     let line4 = Properties.scene.add.bitmapText(0, line3.y + donateSize * 1.4, 'dark', lines[3], donateSize)
     let line5 = Properties.scene.add.bitmapText(0, line4.y + donateSize * 1.4, 'dark', lines[4], donateSize)
-    let donateButton = Properties.scene.add.image(0, line5.y + donateSize + 2 * offsetY, 'donate').setScale(btnScale)
+    // let donateButton = Properties.scene.add.image(0, line5.y + donateSize + 2 * offsetY, 'donate').setScale(btnScale)
     // Combine and update origin
     // let items = [rect1, rect2, title1, title2, line1, line2, line3, line4, line5, donateButton]
     let items = [rect1, rect2, title1, title2]
     for (const item of items) { item.setOrigin(0.5, 0) }
     // Interactions
-    donateButton.setInteractive().setScrollFactor(0)
+    // donateButton.setInteractive().setScrollFactor(0)
     // Root element
     let container = Properties.scene.add.container(posX, posY, items)
     container.setScrollFactor(0).setDepth(Constants.DEPTH.important * 3)
     // Open donate page as pointer raises
-    donateButton.on('pointerup', () => {
-        window.open('https://donorbox.org/2020-game', '_blank')
-        // Yandex.Metrika
-        ym(70640851, 'reachGoal', 'DONATE_CLICKED')
-    })
+    // donateButton.on('pointerup', () => {
+    //     window.open('https://donorbox.org/2020-game', '_blank')
+    //     // Yandex.Metrika
+    //     ym(70640851, 'reachGoal', 'DONATE_CLICKED')
+    // })
     // Yandex.Metrika
     ym(70640851, 'reachGoal', 'DONATE_POPUP')
 }
