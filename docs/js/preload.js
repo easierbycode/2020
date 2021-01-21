@@ -172,6 +172,9 @@ function preloadLevel0() {
     this.load.spritesheet('0-bird', `${CDN_URL}/assets/level0/godpigeon.png`, {
         frameWidth: 38, frameHeight: 25
     })
+    this.load.spritesheet('0-claire', `${CDN_URL}/assets/level0/claire.png`, {
+        frameWidth: 16, frameHeight: 16
+    })
 }
 
 function preloadLevel1() {

@@ -5,11 +5,14 @@ import { fadeInOutTitle, playerSpriteThrow } from '../helpers.js'
 
 // Additional processing of sprites from tilemap
 const PROCESSING = {
-    '0-ball': saveBall
+    '0-ball': saveBall,
+    '0-claire': saveClaire
 }
 
 // Tennis ball sprite
 let ball
+// Claire sprite
+let claire
 
 
 export default {
@@ -71,11 +74,43 @@ export default {
             
             playerSpriteThrow()
 
-            Properties.scene.time.delayedCall(500, () => { Properties.giveControl() })
+            Properties.scene.time.delayedCall(500, () => {
+                Properties.giveControl()
+                // Play animation
+                claire.anims.play('0-claire');
+                // Move Claire to the right
+                claire.body.setVelocityX(600)
+            })
         })
     }
 }
 
 function saveBall(sprite) {
     ball = sprite
+}
+
+function saveClaire(image) {
+    let {x,y} = image
+    image.destroy()
+    claire = Properties.scene.physics.add.sprite(x, y, '0-claire')
+    // Set colliding with world bounds
+    claire.setCollideWorldBounds(true)
+    // Claire collides with the ground
+    let foreground = Properties.map.getLayer('foreground').tilemapLayer
+    Properties.scene.physics.add.collider(claire, foreground)
+    // Set origin and refresh body
+    claire.setOrigin(0, 1).refreshBody()
+    // Resize
+    claire.setScale(3)
+    // Flip horizontally
+    claire.flipX = true
+    // Create animation for Claire
+    if (!Properties.scene.anims.exists('0-claire')) {
+        Properties.scene.anims.create({
+            key: '0-claire',
+            frames: Properties.scene.anims.generateFrameNumbers('0-claire', { start: 1, end: 2 }),
+            frameRate: 5,
+            repeat: -1
+        })
+    }
 }
