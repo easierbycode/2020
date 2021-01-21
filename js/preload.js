@@ -264,6 +264,9 @@ function preloadLevel3() {
     this.load.image('3-home-wall1', `${CDN_URL}/assets/level3/home-wall1.png`)
     this.load.image('3-home-wall2', `${CDN_URL}/assets/level3/home-wall2.png`)
     this.load.image('3-toilet', `${CDN_URL}/assets/level3/toilet.png`)
+    this.load.spritesheet('3-turtle', `${CDN_URL}/assets/level3/turtle.png`, {
+        frameWidth: 32, frameHeight: 25
+    })
     this.load.image('3-book1', `${CDN_URL}/assets/level3/book1.png`)
     this.load.image('3-book2', `${CDN_URL}/assets/level3/book2.png`)
     this.load.image('3-book3', `${CDN_URL}/assets/level3/book3.png`)

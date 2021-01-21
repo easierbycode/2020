@@ -13,6 +13,7 @@ const PROCESSING = {
     '3-home-wall1': processHomeWall,
     '3-home-wall2': processHomeWall,
     '3-toilet': processToiletItem,
+    '3-turtle': processTurtle,
     '3-book1': processToiletItem,
     '3-book2': processToiletItem,
     '3-book3': processToiletItem
@@ -24,6 +25,9 @@ const STOCK_ACCELERATION = 300
 let homeWalls
 // Array for toilet papers
 let toiletItems
+// Turtle sprite
+let turtle
+
 
 export default {
     preloadLevel: function() {
@@ -238,4 +242,30 @@ function processToiletItem(toiletItem) {
     toiletItem.setDepth(Constants.DEPTH.foregroundMain)
     // Add to array
     toiletItems.push(toiletItem)
+}
+
+function processTurtle(turtleImage) {
+    let {x, y} = turtleImage
+    turtleImage.destroy()
+    turtle = Properties.scene.physics.add.sprite(x, y, '3-turtle')
+    // Set colliding with world bounds
+    turtle.setCollideWorldBounds(true)
+    // Turtle collides with the ground
+    let foreground = Properties.map.getLayer('foreground').tilemapLayer
+    Properties.scene.physics.add.collider(turtle, foreground)
+    // Set origin and refresh body
+    turtle.setOrigin(0, 1).refreshBody()
+    // Create animation for the turtle
+    if (!Properties.scene.anims.exists('3-turtle')) {
+        Properties.scene.anims.create({
+            key: '3-turtle',
+            frames: Properties.scene.anims.generateFrameNumbers('3-turtle', { start: 0, end: 3 }),
+            frameRate: 5,
+            repeat: -1
+        })
+    }
+    // Play animation
+    turtle.anims.play('3-turtle')
+    // Move turtle to the right
+    turtle.body.setVelocityX(1)
 }
