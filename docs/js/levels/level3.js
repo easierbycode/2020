@@ -138,15 +138,26 @@ export default {
                                     let angleToPlayer = Phaser.Math.Angle.BetweenPoints( owl, cat )
                                     Properties.scene.physics.velocityFromRotation( angleToPlayer, 800, owl.body.velocity )
 
-                                    // Set collision with fire – game over
+                                    // Set collision between owl and cat
                                     catCollider = Properties.scene.physics.add.collider(
                                         owl,
                                         cat,
                                         () => {
-                                            owl.body.setVelocityX(0)
-                                            owl.body.setVelocityY(0)
+                                            cat.setCollideWorldBounds(false)
+                                            catCollider.destroy()
+                                            owl.body.setVelocity(0)
                                             cat.anims.play('3-cat-hurt')
                                             owl.anims.play('3-owl-fly-vertical')
+
+                                            // fly up and away with cat
+                                            Properties.scene.tweens.add({
+                                                targets: [owl, cat],
+                                                y: cat.y * -1,
+                                                duration: 750,
+                                                onComplete: () => {
+                                                    cat.destroy()
+                                                }
+                                            })
                                         }
                                     )
                                 }
@@ -306,10 +317,9 @@ function processOwl(owlImage) {
     if (!Properties.scene.anims.exists('3-owl-fly-horizontal')) {
         Properties.scene.anims.create({
             key: '3-owl-fly-horizontal',
-            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-horizontal', { start: 0, end: 4 }),
-            frameRate: 4,
-            repeat: -1,
-            yoyo: true
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-horizontal', { start: 1, end: 4 }),
+            frameRate: 10,
+            repeat: -1
         })
     }
     if (!Properties.scene.anims.exists('3-owl-fly-vertical')) {
