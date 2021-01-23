@@ -65,6 +65,8 @@ let homeWalls
 let currentCoronaAction
 // Owl
 let owl
+// Owl shoot timer
+let shootTimer
 // Wall collider
 let wallCollider
 
@@ -192,6 +194,13 @@ export default {
         })
 
         // drop 3 eggs
+        shootTimer = Properties.scene.time.addEvent({
+            delay: 3500,
+            callback: () => {
+                owl.shoot()
+            },
+            repeat: -1
+        })
 
         // hatch babies when they hit ground
 
@@ -405,6 +414,31 @@ function processOwl(owlImage) {
     let {x, y} = owlImage
     owlImage.destroy()
     owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
+    
+    owl.shoot = () => {
+        let {x, y} = owl.getBottomCenter()
+        let style = {
+            fontSize: 32
+        }
+        if (Math.random() < 0.5) {
+            let emoji = Properties.scene.add.text(x, y, '🪱', style)
+            Properties.scene.physics.add.existing(emoji)
+            emoji.setOrigin(0.5, 0)
+            Properties.scene.time.addEvent({
+                delay: 13,
+                callback: () => {
+                    emoji.body
+                        .setVelocityY(200)
+                        .setSize(emoji.width, emoji.height, true)
+                }
+            })
+        } else {
+            let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
+            egg.setOrigin(0.5, 0).refreshBody()
+            egg.setVelocityY(200)
+        }
+    }
+
     // remove gravity
     owl.body.setAllowGravity(false)
     // Set origin
