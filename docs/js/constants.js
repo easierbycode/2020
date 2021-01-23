@@ -24,6 +24,7 @@ export default {
         13: '6-checkpoint13',
         14: '6-checkpoint14',
         15: '7-checkpoint15',
+        16: '7-checkpoint16'
     },
     VOLUME: {
         intro: 0.1,

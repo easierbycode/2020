@@ -6977,6 +6977,18 @@
                  "width":0,
                  "x":61632,
                  "y":63
+                }, 
+                {
+                 "height":0,
+                 "id":992,
+                 "name":"7-checkpoint16",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":61057,
+                 "y":352
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -6985,7 +6997,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":991,
+ "nextobjectid":993,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"2021.01.13",
