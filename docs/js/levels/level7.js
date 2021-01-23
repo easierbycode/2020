@@ -18,8 +18,9 @@ const POST_PROCESSING = {
     'c-corona': corona => processCorona(corona, false, false),
     'c-mask': processMask,
     '7-home': processHome,
-    '3-home-wall1': wall => wall.setDepth(Constants.DEPTH.important),
+    '3-home-wall1': processHomeWall,
     '3-home-wall2': wall => wall.setDepth(Constants.DEPTH.important),
+    '3-owl': processOwl,
     '7-vaccine': processVaccine,
 }
 // Intervals
@@ -58,8 +59,15 @@ let syringeGroup, syringeCollider
 let coronaInterval, shootingInterval
 // Home and fireworks sprite
 let home, fireworks
+// Home walls
+let homeWalls
 // Parameter for the current corona action
 let currentCoronaAction
+// Owl
+let owl
+// Wall collider
+let wallCollider
+
 
 export default {
     preloadLevel: function() {
@@ -67,6 +75,7 @@ export default {
         clearScene()
         initSyringeGroup()
         fireworks = []
+        homeWalls = []
         currentCoronaAction = 0
         // Load sprites for Level 7
         Properties.map.getObjectLayer('level7').objects.forEach(object => {
@@ -153,6 +162,43 @@ export default {
     clear: function() {
         if (syringeCollider && syringeCollider.active) { syringeCollider.destroy() }
         if (syringeGroup && syringeGroup.active) { syringeGroup.destroy() }
+    },
+    // To defeat boss, must jump on his head 5 times
+    boss: function() {
+        // Owl wakes up
+        owl.anims.play('3-owl-wake')
+
+        // flies up
+        Properties.scene.time.addEvent({
+            delay: 1000,
+            callback: () => owl.anims.play('3-owl-fly-vertical')
+        })
+        Properties.scene.tweens.add({
+            targets: [owl],
+            y: owl.y - 100,
+            delay: 1000,
+            duration: 750,
+            onComplete: () => {
+                owl.anims.play('3-owl-fly-horizontal')
+                addBounceTween(owl)
+                Properties.scene.tweens.add({
+                    targets: [owl],
+                    x: owl.x - 500,
+                    duration: 3000,
+                    yoyo: true,
+                    repeat: -1
+                })
+            }
+        })
+
+        // drop 3 eggs
+
+        // hatch babies when they hit ground
+
+        // babies attack
+
+        // while babies attack, owl flies up off screen, comes back w/ worms he drops on you
+
     }
 }
 
@@ -209,6 +255,24 @@ function processHome(sprite) {
     // Set depth important at first, so corona is behind
     home.setDepth(Constants.DEPTH.important)
 }
+
+
+function processHomeWall(wall) {
+    // Set depth
+    wall.setDepth(Constants.DEPTH.important)
+    // Enable physics
+    Properties.scene.physics.add.existing(wall)
+    // Enable wall
+    wall.body.enable = true
+    // Wall collider
+    wallCollider = Properties.scene.physics.add.collider(Properties.player, wall)
+    // Disable gravity and make immovable by other objects
+    wall.body.setImmovable(true)
+    wall.body.setAllowGravity(false)
+    // Add to array
+    homeWalls.push(wall)
+}
+
 
 function processVaccine(vaccine) {
     // Define physics
@@ -334,4 +398,60 @@ function finishGame() {
     Properties.scene.time.delayedCall(1000, () => showFirework(fireworks[2]))
     // Wait and start outro
     Properties.scene.time.delayedCall(2000, () => Outro.start())
+}
+
+
+function processOwl(owlImage) {
+    let {x, y} = owlImage
+    owlImage.destroy()
+    owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
+    // remove gravity
+    owl.body.setAllowGravity(false)
+    // Set origin
+    owl.setOrigin(0, 1).refreshBody()
+    // Create animation for the owl
+    if (!Properties.scene.anims.exists('3-owl-fly-vertical')) {
+        Properties.scene.anims.create({
+            key: '3-owl-fly-vertical',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-vertical', { start: 1, end: 4 }),
+            frameRate: 10,
+            repeat: -1
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl-fly-vertical-fast')) {
+        Properties.scene.anims.create({
+            key: '3-owl-fly-vertical-fast',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-vertical-fast', { start: 0, end: 9 }),
+            frameRate: 10,
+            repeat: -1
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl')) {
+        Properties.scene.anims.create({
+            key: '3-owl',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl', { start: 0, end: 3 }),
+            frameRate: 4,
+            repeat: -1,
+            yoyo: true
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl-fly-horizontal')) {
+        Properties.scene.anims.create({
+            key: '3-owl-fly-horizontal',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-horizontal', { start: 1, end: 4 }),
+            frameRate: 10,
+            repeat: -1
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl-wake')) {
+        Properties.scene.anims.create({
+            key: '3-owl-wake',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-vertical', { start: 0, end: 0 }),
+            frameRate: 10
+        })
+    }
+    // Play animation
+    owl.anims.play('3-owl')
+
+    Properties.boss = owl
 }

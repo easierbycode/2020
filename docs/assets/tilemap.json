@@ -5923,6 +5923,18 @@
                  "width":212,
                  "x":63296,
                  "y":256
+                }, 
+                {
+                 "gid":102,
+                 "height":54,
+                 "id":989,
+                 "name":"3-owl",
+                 "rotation":0,
+                 "type":"image",
+                 "visible":true,
+                 "width":52,
+                 "x":61574.5,
+                 "y":338
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -6953,6 +6965,18 @@
                  "width":0,
                  "x":705,
                  "y":64
+                }, 
+                {
+                 "height":0,
+                 "id":990,
+                 "name":"7-boss",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":61632,
+                 "y":63
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -6961,7 +6985,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":989,
+ "nextobjectid":991,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"2021.01.13",

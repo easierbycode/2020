@@ -80,6 +80,7 @@ const HANDLERS = {
     '7-reset': Level7.removeSyringe,
     '7-game-win': Level7.gameWin,
     '7-clear': Level7.clear,
+    '7-boss': Level7.boss,
     // Outro
     'o-load': Outro.preloadLevel
 }

@@ -67,4 +67,9 @@ export function processEachStep() {
         // Update state
         Properties.playerState.jumping = true
     }
+
+    // Boss battle
+    if (Properties.boss) {
+        Properties.boss.flipX = Properties.boss.x > Properties.player.x
+    }
 }

@@ -2,6 +2,8 @@ import Constants from './constants.js'
 import { addGameOverLayer, playerSpriteStand } from './helpers.js'
 
 const PROPERTIES = {
+    // Boss object
+    boss: undefined,
     // Loaded state
     gameIsLoaded: false,
     // Base scene object
