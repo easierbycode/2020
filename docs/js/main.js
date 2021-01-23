@@ -4,6 +4,7 @@ import Properties from './properties.js'
 import { preloadAssets } from './preload.js'
 import { initObjects } from './create.js'
 import { processEachStep } from './update.js'
+import phaserJuice from './phaserJuicePlugin.min.js'
 
 // Device sizes
 const WIDTH = window.outerWidth, HEIGHT = window.outerHeight
@@ -69,6 +70,11 @@ function initGame(gameWidth, gameHeight, scale) {
         },
         fps: {
             target: 60,
+        },
+        plugins: {
+            scene: [
+                { key: 'phaserJuice', plugin: phaserJuice, mapping: 'juice' }
+            ]
         },
         scene: {
             preload: preloadAssets,

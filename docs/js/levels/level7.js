@@ -22,6 +22,7 @@ const POST_PROCESSING = {
     '3-home-wall2': wall => wall.setDepth(Constants.DEPTH.important),
     '3-owl': processOwl,
     '7-vaccine': processVaccine,
+    '7-ufo-ship': processUfoShip
 }
 // Intervals
 const SYRINGE_INTERVAL = 700
@@ -65,10 +66,14 @@ let homeWalls
 let currentCoronaAction
 // Owl
 let owl
+// Owl tween
+let owlTween
 // Owl shoot timer
 let shootTimer
 // Wall collider
 let wallCollider
+// Ufo ray beam
+let ray
 
 
 export default {
@@ -175,7 +180,7 @@ export default {
             delay: 1000,
             callback: () => owl.anims.play('3-owl-fly-vertical')
         })
-        Properties.scene.tweens.add({
+        owlTween = Properties.scene.tweens.add({
             targets: [owl],
             y: owl.y - 100,
             delay: 1000,
@@ -413,30 +418,45 @@ function finishGame() {
 function processOwl(owlImage) {
     let {x, y} = owlImage
     owlImage.destroy()
+    // owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(4)
     owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
     
     owl.shoot = () => {
-        let {x, y} = owl.getBottomCenter()
-        let style = {
-            fontSize: 32
-        }
-        if (Math.random() < 0.5) {
-            let emoji = Properties.scene.add.text(x, y, '🪱', style)
-            Properties.scene.physics.add.existing(emoji)
-            emoji.setOrigin(0.5, 0)
-            Properties.scene.time.addEvent({
-                delay: 13,
-                callback: () => {
-                    emoji.body
-                        .setVelocityY(200)
-                        .setSize(emoji.width, emoji.height, true)
-                }
-            })
-        } else {
-            let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
-            egg.setOrigin(0.5, 0).refreshBody()
-            egg.setVelocityY(200)
-        }
+        let duration = 250
+        let repeat = 1
+        // spinXConfig = { scaleX: direction, duration: 500, yoyo: true, repeat: 3, ease: 'Sine.easeInOut', delay: 0, paused: false }
+        spinXConfig = { duration, repeat }
+        Properties.scene.juice.spinX(owl, true, spinXConfig)
+        
+        // Properties.scene.tweens.add({
+        //     targets: [owl],
+        //     y: 576,
+        //     duration: 500,
+        //     yoyo: true,
+        //     repeat: 0
+        // })
+        
+        // let {x, y} = owl.getBottomCenter()
+        // let style = {
+        //     fontSize: 32
+        // }
+        // if (Math.random() < 0.5) {
+        //     let emoji = Properties.scene.add.text(x, y, '🪱', style)
+        //     Properties.scene.physics.add.existing(emoji)
+        //     emoji.setOrigin(0.5, 0)
+        //     Properties.scene.time.addEvent({
+        //         delay: 13,
+        //         callback: () => {
+        //             emoji.body
+        //                 .setVelocityY(200)
+        //                 .setSize(emoji.width, emoji.height, true)
+        //         }
+        //     })
+        // } else {
+        //     let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
+        //     egg.setOrigin(0.5, 0).refreshBody()
+        //     egg.setVelocityY(200)
+        // }
     }
 
     // remove gravity
@@ -488,4 +508,69 @@ function processOwl(owlImage) {
     owl.anims.play('3-owl')
 
     Properties.boss = owl
+}
+
+
+function processUfoShip(ufoImage) {
+    // console.log(ufoImage)
+    // Properties.physics.scene.add.existing(owlImage)
+
+    addBounceTween(ufoImage)
+
+    Properties.scene.tweens.add({
+        targets: [ufoImage],
+        x: ufoImage.x - 1197,
+        duration: 1500,
+        onComplete: () => {
+            let {x, y} = ufoImage.getBottomCenter()
+            processRay({
+                x,
+                y,
+                name: '0-ray'
+            })
+        }
+    })
+}
+
+function processRay(rayObject) {
+    ray = Properties.scene.add.sprite(rayObject.x, rayObject.y, rayObject.name).setOrigin(1, 0)
+
+    addBounceTween(ray)
+
+    let angleToOwl = Phaser.Math.Angle.BetweenPoints(ray, owl)
+
+    // set height to distance between owl and ufo
+
+
+    // Fix position for the new origin
+    ray.x += ray.width
+    ray.y -= ray.height
+    // Fix depth
+    ray.setDepth(Constants.DEPTH.background)
+    // Init animation and play
+    Properties.scene.anims.create({
+        key: 'o-ray',
+        frames: Properties.scene.anims.generateFrameNumbers('o-ray', { start: 0, end: 3 }),
+        // frames: 'o-ray',
+        frameRate: 10,
+        repeat: -1
+    })
+    ray.anims.play('o-ray')
+    // Hide
+    // ray.alpha = 0
+    ray.alpha = 1
+    
+
+    ray.angle = ray.angle - 1.5
+    
+    
+    Properties.scene.tweens.add({
+        targets: ray,
+        angle: ray.angle + 5,
+        scale: ray.scale * 1.2,
+        duration: 3000,
+        yoyo: true,
+        ease: 'Sine.easeInOut',
+        loop: -1
+    })
 }

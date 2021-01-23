@@ -381,6 +381,7 @@ function preloadLevel7() {
     this.load.image('7-bush', `${CDN_URL}/assets/level7/bush.png`)
     this.load.image('7-tree1', `${CDN_URL}/assets/level7/tree1.png`)
     this.load.image('7-tree2', `${CDN_URL}/assets/level7/tree2.png`)
+    this.load.image('7-ufo-ship', `${CDN_URL}/assets/level7/ufo-ship.png`)
     // Fireworks and smoke
     this.load.spritesheet('7-smoke', `${CDN_URL}/assets/level7/smoke.png`, {
         frameWidth: 308, frameHeight: 216, margin: 1, spacing: 2
