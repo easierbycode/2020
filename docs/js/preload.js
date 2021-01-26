@@ -280,6 +280,9 @@ function preloadLevel3() {
     this.load.spritesheet('3-owl', `${CDN_URL}/assets/level3/owl/idle.png`, {
         frameWidth: 26, frameHeight: 27
     })
+    this.load.spritesheet('3-owl-baby', `${CDN_URL}/assets/level3/owl/baby.png`, {
+        frameWidth: 19, frameHeight: 16
+    })
     this.load.spritesheet('3-owl-fly-horizontal', `${CDN_URL}/assets/level3/owl/fly-horizontal.png`, {
         frameWidth: 30, frameHeight: 27
     })

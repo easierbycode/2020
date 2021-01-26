@@ -64,6 +64,8 @@ let home, fireworks
 let homeWalls
 // Parameter for the current corona action
 let currentCoronaAction
+// Egg collider
+let eggCollider
 // Owl
 let owl
 // Owl tween
@@ -113,6 +115,16 @@ export default {
         AudioManager.setMain('full')
         // Yandex.Metrika
         ym(70640851, 'reachGoal', 'CHECKPOINT_15')
+    },
+    checkpoint16: function() {
+        // Update checkpoint
+        Properties.checkpoint = 16
+        // Clear passed objects
+        clearScene()
+        // Play main theme full
+        AudioManager.setMain('full')
+        // Yandex.Metrika
+        ym(70640851, 'reachGoal', 'CHECKPOINT_16')
     },
     showTitle: function() {
         fadeInOutTitle('COVID SECOND WAVE', null, 3000)
@@ -421,42 +433,83 @@ function processOwl(owlImage) {
     // owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(4)
     owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
     
-    owl.shoot = () => {
-        let duration = 250
+    owl.groundPound = () => {
+        let duration = 125
         let repeat = 1
-        // spinXConfig = { scaleX: direction, duration: 500, yoyo: true, repeat: 3, ease: 'Sine.easeInOut', delay: 0, paused: false }
-        spinXConfig = { duration, repeat }
+        let spinXConfig = { duration, repeat }
         Properties.scene.juice.spinX(owl, true, spinXConfig)
         
-        // Properties.scene.tweens.add({
-        //     targets: [owl],
-        //     y: 576,
-        //     duration: 500,
-        //     yoyo: true,
-        //     repeat: 0
-        // })
-        
-        // let {x, y} = owl.getBottomCenter()
-        // let style = {
-        //     fontSize: 32
-        // }
-        // if (Math.random() < 0.5) {
-        //     let emoji = Properties.scene.add.text(x, y, '🪱', style)
-        //     Properties.scene.physics.add.existing(emoji)
-        //     emoji.setOrigin(0.5, 0)
-        //     Properties.scene.time.addEvent({
-        //         delay: 13,
-        //         callback: () => {
-        //             emoji.body
-        //                 .setVelocityY(200)
-        //                 .setSize(emoji.width, emoji.height, true)
-        //         }
-        //     })
-        // } else {
-        //     let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
-        //     egg.setOrigin(0.5, 0).refreshBody()
-        //     egg.setVelocityY(200)
-        // }
+        Properties.scene.tweens.add({
+            targets: [owl],
+            y: 576,
+            duration: duration * (repeat+1) * 2,
+            yoyo: true,
+            repeat: 0,
+            onYoyo: () => {
+                let shakeConfig = { x: 0, y: 5, duration: 50, yoyo: true, repeat: 3, ease: 'Bounce.easeInOut', delay: 0, paused: false }
+                Properties.scene.juice.shake(Properties.scene.cameras.main, shakeConfig)
+            }
+        })
+    }
+
+    owl.shoot = () => {
+        let {x, y} = owl.getBottomCenter()
+        let style = {
+            fontSize: 32
+        }
+        if (Math.random() < 0.5) {
+            owl.groundPound()
+            // let emoji = Properties.scene.add.text(x, y, '🪱', style)
+            // Properties.scene.physics.add.existing(emoji)
+            // emoji.setOrigin(0.5, 0)
+            // Properties.scene.time.addEvent({
+            //     delay: 13,
+            //     callback: () => {
+            //         emoji.body
+            //             .setVelocityY(200)
+            //             .setSize(emoji.width, emoji.height, true)
+            //     }
+            // })
+        } else {
+            let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
+            egg.setOrigin(0.5, 0).refreshBody()
+            egg.setVelocityY(200)
+
+            if (!Properties.scene.anims.exists('3-owl-baby')) {
+                Properties.scene.anims.create({
+                    key: '3-owl-baby',
+                    frames: Properties.scene.anims.generateFrameNumbers('3-owl-baby', { start: 0, end: 2 }),
+                    frameRate: 5,
+                    repeat: -1
+                })
+            }
+
+            // Set colliding with world bounds
+            egg.setCollideWorldBounds(true)
+            // Egg collides with the ground
+            let foreground = Properties.map.getLayer('foreground').tilemapLayer
+            let eggCollider = Properties.scene.physics.add.collider(egg, foreground, (egg, foreground) => {
+                let {x, y} = egg.getTopCenter()
+                let owlBaby = Properties.scene.physics.add.sprite(x, y, '3-owl-baby').setScale(2)
+                owlBaby.body.setAllowGravity(false)
+                owlBaby.setOrigin(0.5, 0).refreshBody()
+                owlBaby.anims.play('3-owl-baby')
+                addBounceTween(owlBaby)
+
+                // Owl baby flies towards player
+                let flipX = owlBaby.x < Properties.player.x
+
+                if (flipX) {
+                    owlBaby.flipX = true
+                    owlBaby.setVelocityX(150)
+                } else {
+                    owlBaby.setVelocityX(-150)
+                }
+
+                egg.destroy()
+                eggCollider.destroy()
+            })
+        }
     }
 
     // remove gravity
@@ -533,7 +586,9 @@ function processUfoShip(ufoImage) {
 }
 
 function processRay(rayObject) {
-    ray = Properties.scene.add.sprite(rayObject.x, rayObject.y, rayObject.name).setOrigin(1, 0)
+    ray = Properties.scene.physics.add.sprite(rayObject.x, rayObject.y, rayObject.name).setOrigin(1, 0)
+
+    ray.body.setAllowGravity(false)
 
     addBounceTween(ray)
 
