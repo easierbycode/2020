@@ -286,7 +286,16 @@ function preloadLevel3() {
     this.load.spritesheet('3-owl-fly-horizontal', `${CDN_URL}/assets/level3/owl/fly-horizontal.png`, {
         frameWidth: 30, frameHeight: 27
     })
+    this.load.spritesheet('3-owl-fly-horizontal-fast', `${CDN_URL}/assets/level3/owl/fly-horizontal-fast.png`, {
+        frameWidth: 30, frameHeight: 27
+    })
     this.load.spritesheet('3-owl-fly-vertical', `${CDN_URL}/assets/level3/owl/fly-vertical.png`, {
+        frameWidth: 32, frameHeight: 27
+    })
+    this.load.spritesheet('3-owl-fly-vertical-fast', `${CDN_URL}/assets/level3/owl/fly-vertical-fast.png`, {
+        frameWidth: 32, frameHeight: 27
+    })
+    this.load.spritesheet('3-owl-hurt', `${CDN_URL}/assets/level3/owl/hurt.png`, {
         frameWidth: 32, frameHeight: 27
     })
     this.load.spritesheet('3-turtle', `${CDN_URL}/assets/level3/turtle.png`, {

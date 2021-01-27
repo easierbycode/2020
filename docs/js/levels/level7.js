@@ -68,8 +68,10 @@ let currentCoronaAction
 let eggCollider
 // Owl
 let owl
-// Owl tween
-let owlTween
+let owlFlyX = 61574.5
+let owlFlyY = 238
+// Owl tweens
+let owlBounceTween, owlFlyTween
 // Owl shoot timer
 let shootTimer
 // Wall collider
@@ -187,31 +189,11 @@ export default {
         // Owl wakes up
         owl.anims.play('3-owl-wake')
 
-        // flies up
-        Properties.scene.time.addEvent({
-            delay: 1000,
-            callback: () => owl.anims.play('3-owl-fly-vertical')
-        })
-        owlTween = Properties.scene.tweens.add({
-            targets: [owl],
-            y: owl.y - 100,
-            delay: 1000,
-            duration: 750,
-            onComplete: () => {
-                owl.anims.play('3-owl-fly-horizontal')
-                addBounceTween(owl)
-                Properties.scene.tweens.add({
-                    targets: [owl],
-                    x: owl.x - 500,
-                    duration: 3000,
-                    yoyo: true,
-                    repeat: -1
-                })
-            }
-        })
+        owl.fly()
 
         // drop 3 eggs
         shootTimer = Properties.scene.time.addEvent({
+            paused: true,
             delay: 3500,
             callback: () => {
                 owl.shoot()
@@ -376,6 +358,39 @@ function startSyringeShooting() {
     })
 }
 
+function addOwlBaby(x, y) {
+    if (!Properties.scene.anims.exists('3-owl-baby')) {
+        Properties.scene.anims.create({
+            key: '3-owl-baby',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-baby', { start: 0, end: 2 }),
+            frameRate: 5,
+            repeat: -1
+        })
+    }
+
+    let owlBaby = Properties.scene.physics.add.sprite(x, y, '3-owl-baby').setScale(2)
+
+    owlBaby.body
+        .setAllowGravity(false)
+        .setSize(19, 12)
+        .setOffset(0, 3, false)
+    owlBaby.setOrigin(0.5, 0).refreshBody()
+    owlBaby.anims.play('3-owl-baby')
+    addBounceTween(owlBaby)
+
+    // Fly towards player
+    let flipX = owlBaby.x < Properties.player.x
+
+    if (flipX) {
+        owlBaby.flipX = true
+        owlBaby.setVelocityX(150)
+    } else {
+        owlBaby.setVelocityX(-150)
+    }
+
+    return owlBaby
+}
+
 function addSyringe() {
     if (!Properties.player.flipX) {
         // Set position and create
@@ -430,82 +445,91 @@ function finishGame() {
 function processOwl(owlImage) {
     let {x, y} = owlImage
     owlImage.destroy()
-    // owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(4)
+    
     owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
+
+    let shakeConfig = { x: 0, y: 5, repeat: 4 }
+    
+    shakeConfig.onStart = () => {
+        owl.flipY = true
+        owl.anims.play('3-owl-hurt')
+    }
+    
+    shakeConfig.onComplete = () => {
+        Properties.scene.time.delayedCall(4000, () => {
+            Properties.scene.juice.shake(owl, {
+                onComplete: () => {
+                    owl.flipY = false
+                    owl.anims.play('3-owl-fly-vertical-fast')
+
+                    Properties.scene.time.delayedCall(500, () => {
+                        owl.fly()
+                    })
+                }
+            })
+        })
+    }
+
+    // Owl collides with the ground
+    let foreground = Properties.map.getLayer('foreground').tilemapLayer
+    Properties.scene.physics.add.collider(owl, foreground, (o, f) => {
+        Properties.scene.juice.shake(Properties.scene.cameras.main, shakeConfig)
+        owlFlyTween.remove()
+        shootTimer.paused = true
+    })
+
+    owl.fly = () => {
+        // flies up, then patrols back and forth
+        Properties.scene.tweens.add({
+            targets: owl,
+            x: owlFlyX,
+            y: owlFlyY,
+            delay: 1000,
+            duration: 750,
+            onStart: () => { owl.anims.play('3-owl-fly-vertical') },
+            onComplete: () => {
+
+                shootTimer.paused = false
+
+                owl.anims.play('3-owl-fly-horizontal')
+                owlBounceTween = addBounceTween(owl)
+                owlFlyTween = Properties.scene.tweens.add({
+                    targets: owl,
+                    x: owl.x - 500,
+                    duration: 3000,
+                    yoyo: true,
+                    repeat: -1
+                })
+            }
+        })
+    }
     
     owl.groundPound = () => {
-        let duration = 125
-        let repeat = 1
-        let spinXConfig = { duration, repeat }
-        Properties.scene.juice.spinX(owl, true, spinXConfig)
+
+        owl.anims.play('3-owl-fly-horizontal-fast')
         
-        Properties.scene.tweens.add({
-            targets: [owl],
-            y: 576,
-            duration: duration * (repeat+1) * 2,
-            yoyo: true,
-            repeat: 0,
-            onYoyo: () => {
-                let shakeConfig = { x: 0, y: 5, duration: 50, yoyo: true, repeat: 3, ease: 'Bounce.easeInOut', delay: 0, paused: false }
-                Properties.scene.juice.shake(Properties.scene.cameras.main, shakeConfig)
-            }
+        owlBounceTween.remove()
+        
+        Properties.scene.time.delayedCall(500, () => {
+            owl.body.setVelocityY(1200)
         })
     }
 
     owl.shoot = () => {
         let {x, y} = owl.getBottomCenter()
-        let style = {
-            fontSize: 32
-        }
+        
         if (Math.random() < 0.5) {
             owl.groundPound()
-            // let emoji = Properties.scene.add.text(x, y, '🪱', style)
-            // Properties.scene.physics.add.existing(emoji)
-            // emoji.setOrigin(0.5, 0)
-            // Properties.scene.time.addEvent({
-            //     delay: 13,
-            //     callback: () => {
-            //         emoji.body
-            //             .setVelocityY(200)
-            //             .setSize(emoji.width, emoji.height, true)
-            //     }
-            // })
+        
         } else {
             let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
             egg.setOrigin(0.5, 0).refreshBody()
-            egg.setVelocityY(200)
-
-            if (!Properties.scene.anims.exists('3-owl-baby')) {
-                Properties.scene.anims.create({
-                    key: '3-owl-baby',
-                    frames: Properties.scene.anims.generateFrameNumbers('3-owl-baby', { start: 0, end: 2 }),
-                    frameRate: 5,
-                    repeat: -1
-                })
-            }
-
-            // Set colliding with world bounds
-            egg.setCollideWorldBounds(true)
+            egg.body.setVelocityY(200)
             // Egg collides with the ground
             let foreground = Properties.map.getLayer('foreground').tilemapLayer
-            let eggCollider = Properties.scene.physics.add.collider(egg, foreground, (egg, foreground) => {
+            eggCollider = Properties.scene.physics.add.collider(egg, foreground, (egg, foreground) => {
                 let {x, y} = egg.getTopCenter()
-                let owlBaby = Properties.scene.physics.add.sprite(x, y, '3-owl-baby').setScale(2)
-                owlBaby.body.setAllowGravity(false)
-                owlBaby.setOrigin(0.5, 0).refreshBody()
-                owlBaby.anims.play('3-owl-baby')
-                addBounceTween(owlBaby)
-
-                // Owl baby flies towards player
-                let flipX = owlBaby.x < Properties.player.x
-
-                if (flipX) {
-                    owlBaby.flipX = true
-                    owlBaby.setVelocityX(150)
-                } else {
-                    owlBaby.setVelocityX(-150)
-                }
-
+                let owlBaby = addOwlBaby(x, y)
                 egg.destroy()
                 eggCollider.destroy()
             })
@@ -516,7 +540,8 @@ function processOwl(owlImage) {
     owl.body.setAllowGravity(false)
     // Set origin
     owl.setOrigin(0, 1).refreshBody()
-    // Create animation for the owl
+    
+    // Create animations for the owl
     if (!Properties.scene.anims.exists('3-owl-fly-vertical')) {
         Properties.scene.anims.create({
             key: '3-owl-fly-vertical',
@@ -529,7 +554,7 @@ function processOwl(owlImage) {
         Properties.scene.anims.create({
             key: '3-owl-fly-vertical-fast',
             frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-vertical-fast', { start: 0, end: 9 }),
-            frameRate: 10,
+            frameRate: 15,
             repeat: -1
         })
     }
@@ -546,6 +571,22 @@ function processOwl(owlImage) {
         Properties.scene.anims.create({
             key: '3-owl-fly-horizontal',
             frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-horizontal', { start: 1, end: 4 }),
+            frameRate: 10,
+            repeat: -1
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl-fly-horizontal-fast')) {
+        Properties.scene.anims.create({
+            key: '3-owl-fly-horizontal-fast',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-fly-horizontal-fast', { start: 1, end: 4 }),
+            frameRate: 15,
+            repeat: -1
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl-hurt')) {
+        Properties.scene.anims.create({
+            key: '3-owl-hurt',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-hurt', { start: 0, end: 3 }),
             frameRate: 10,
             repeat: -1
         })
