@@ -249,11 +249,12 @@ export function clearScene() {
     }
 }
 
-function hitPlayer() {
+export function hitPlayer() {
     // Disable input
     Properties.inputEnabled = false
     // Throw away player and play fall animation
-    Properties.player.setVelocity(-100, -500)
+    let flipX = Properties.player.flipX ? -1 : 1
+    Properties.player.setVelocity(-100 * flipX, -500)
     Properties.player.anims.play('fall')
     // Wait and enable input processing
     Properties.scene.time.delayedCall(500, () => Properties.inputEnabled = true)
