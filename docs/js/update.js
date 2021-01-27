@@ -22,6 +22,7 @@ export function processEachStep() {
         player.setVelocityX(velocityX)
         // Flip sprite back
         player.setFlip(false)
+        player.body.setOffset(14, 41, false)
         // Set running animation if not jumping
         if (!Properties.playerState.jumping) {
             playerSpriteRun()
@@ -38,6 +39,7 @@ export function processEachStep() {
         player.setVelocityX(-velocityX)
         // Flip sprite
         player.setFlip(true)
+        player.body.setOffset(32, 41, false)
         // Set running animation if not jumping
         if (!Properties.playerState.jumping) {
             playerSpriteRun()

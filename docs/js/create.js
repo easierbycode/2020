@@ -129,9 +129,9 @@ function createPlayer() {
     player.setCollideWorldBounds(true)
     // Update body size
     // player.setBodySize(player.width * 0.6, player.height * 0.9)
-    player.setBodySize(60, 91)
+    player.setBodySize(56, 91)
     // player.setOffset(player.width * 0.2, player.height * 0.1)
-    player.setOffset(6, 41, false)
+    player.setOffset(14, 41, false)
     // Set depth – foreground main
     player.setDepth(Constants.DEPTH.important)
     // Animate fall
