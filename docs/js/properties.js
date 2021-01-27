@@ -2,6 +2,8 @@ import Constants from './constants.js'
 import { addGameOverLayer, playerSpriteStand } from './helpers.js'
 
 const PROPERTIES = {
+    // FPS text
+    fpsText: undefined,
     // Boss object
     boss: undefined,
     // Loaded state

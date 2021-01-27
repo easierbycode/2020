@@ -20,6 +20,8 @@ export function initObjects() {
     initAnimations()
     // Create audio
     createAudio.call(this)
+    // create FPS text
+    createFPSText.call(this)
     // Create map with objects
     createMap.call(this)
     // Create text
@@ -118,6 +120,15 @@ function createTitleText() {
     Properties.titleText.setOrigin(0.5, Properties.titleText.originY)
     // Set depth and not affected by camera
     Properties.titleText.setDepth(Constants.DEPTH.important).setScrollFactor(0)
+}
+
+function createFPSText() {
+    if (this.game.config.physics.arcade.debug) {
+        Properties.fpsText = this.add.text(10, 0, 'FPS: --', {
+            font: 'bold 26px Arial',
+            fill: '#ffffff'
+        }).setDepth(Constants.DEPTH.important).setScrollFactor(0)
+    }
 }
 
 function createPlayer() {

@@ -5,7 +5,8 @@ import { playerSpriteJump, playerSpriteRun, playerSpriteStand } from './helpers.
 // For presidents race
 import Level6 from './levels/level6.js'
 
-export function processEachStep() {
+export function processEachStep(time, delta) {
+    if (this.game.config.physics.arcade.debug)  Properties.fpsText.setText(`FPS: ${Math.trunc(1000/delta)}`)
     if (Properties.gameIsOver || !Properties.inputEnabled) { return false }
 
     // Get player
