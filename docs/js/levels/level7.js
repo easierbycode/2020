@@ -4,7 +4,7 @@ import Properties from '../properties.js'
 import Outro from './outro.js'
 import {
     addBounceTween, clearScene, fadeInOutTitle, hideControls,
-    playerSpriteRun, playerSpriteStand, processCorona, processMask
+    playerSpriteJump, playerSpriteRun, playerSpriteStand, processCorona, processMask, hitPlayer
 } from '../helpers.js'
 
 // Additional processing of sprites from tilemap
@@ -66,14 +66,16 @@ let homeWalls
 let currentCoronaAction
 // Egg collider
 let eggCollider
-// Owl
-let owl
+// Owl and collider
+let owl, owlPlayerCollider, owlGroundCollider
 let owlFlyX = 61574.5
 let owlFlyY = 238
 // Owl tweens
 let owlBounceTween, owlFlyTween
-// Owl shoot timer
-let shootTimer
+// Owl shoot/recover timers
+let owlShootTimer, owlRecoverTimer
+// Owl baby group and colliders
+let owlBabyGroup, owlBabyPlayerCollider, owlBabyWallCollider
 // Wall collider
 let wallCollider
 // Ufo ray beam
@@ -105,8 +107,22 @@ export default {
                 }
             }
         })
+
+        // Owl baby group has collider with wall created above
+        initOwlBabyGroup()
+
         // Init fireworks sound
         AudioManager.base.fireworks = Properties.scene.sound.add('fireworks', { loop: false, volume: 0.3 })
+
+        // Destroy owlBaby on world bounds
+        Properties.scene.physics.world.on('worldbounds', (body) => {
+            if (body.gameObject.texture.key == '3-owl-baby') {
+                // Remove all its tweens
+                Properties.scene.tweens.killTweensOf(body.gameObject)
+                // Destroy sprite
+                owlBabyGroup.remove(body.gameObject, true, true)
+            }
+        })
     },
     checkpoint15: function() {
         // Update checkpoint
@@ -139,8 +155,6 @@ export default {
     removeCorona: function() {
         // Stop corona attack
         coronaInterval.remove()
-        // Set home to be behind the player
-        home.setDepth(Constants.DEPTH.foregroundMain)
     },
     removeSyringe: function() {
         // Stop syringe shooting and corona attack
@@ -186,13 +200,16 @@ export default {
     },
     // To defeat boss, must jump on his head 5 times
     boss: function() {
+        // Set home to be behind the player
+        home.setDepth(Constants.DEPTH.foregroundMain)
+
         // Owl wakes up
         owl.anims.play('3-owl-wake')
 
         owl.fly()
 
         // drop 3 eggs
-        shootTimer = Properties.scene.time.addEvent({
+        owlShootTimer = Properties.scene.time.addEvent({
             paused: true,
             delay: 3500,
             callback: () => {
@@ -209,6 +226,41 @@ export default {
 
     }
 }
+
+function initOwlBabyGroup() {
+    // Define group
+    owlBabyGroup = Properties.scene.physics.add.group({ allowGravity: false })
+    // Define collider with player
+    owlBabyPlayerCollider = Properties.scene.physics.add.overlap(
+        Properties.player,
+        owlBabyGroup,
+        (p, o) => {
+            if (o.body.touching.up && p.body.touching.down) {
+                // Jump
+                let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * p.displayHeight
+                p.setVelocityY(velocityY * 1.25)
+                // Set jump animation
+                playerSpriteJump()
+                // Update state
+                Properties.playerState.jumping = true
+            } else {
+                hitPlayer()
+                Properties.gameOver()
+            }
+        }
+    )
+
+    // Define collider with wall
+    owlBabyWallCollider = Properties.scene.physics.add.collider(
+        homeWalls[0],
+        owlBabyGroup,
+        (w, o) => {
+            o.flipX = !o.flipX
+            o.body.setVelocityX(-150)
+        }
+    )
+}
+
 
 function initSyringeGroup() {
     // Define group
@@ -368,12 +420,20 @@ function addOwlBaby(x, y) {
         })
     }
 
-    let owlBaby = Properties.scene.physics.add.sprite(x, y, '3-owl-baby').setScale(2)
+    let owlBaby = owlBabyGroup.create(x, y, '3-owl-baby').setScale(5)
+
+    let { x: _x, y: _y, width, height } = Properties.scene.cameras.main.worldView
+    let bounds = new Phaser.Geom.Rectangle(_x - 100, _y + 100, width, height)
 
     owlBaby.body
-        .setAllowGravity(false)
         .setSize(19, 12)
         .setOffset(0, 3, false)
+        .setBoundsRectangle(bounds)
+
+
+    owlBaby.setCollideWorldBounds(true)
+    owlBaby.body.onWorldBounds = true
+
     owlBaby.setOrigin(0.5, 0).refreshBody()
     owlBaby.anims.play('3-owl-baby')
     addBounceTween(owlBaby)
@@ -445,38 +505,114 @@ function finishGame() {
 function processOwl(owlImage) {
     let {x, y} = owlImage
     owlImage.destroy()
-    
-    owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
+
+    owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(5)
+
+    owl.hp = 5
 
     let shakeConfig = { x: 0, y: 5, repeat: 4 }
-    
+
     shakeConfig.onStart = () => {
+        owlRecoverTimer = Properties.scene.time.addEvent({
+            paused: true,
+            delay: 4000,
+            callback: () => {
+                if (owl.hp <= 0)  return;
+                Properties.scene.juice.shake(owl, {
+                    onComplete: () => {
+                        if (owl.hp <= 0)  return;
+                        
+                        owl.flipY = false
+                        owl.anims.play('3-owl-fly-vertical-fast')
+    
+                        Properties.scene.time.delayedCall(500, () => {
+                            owl.fly()
+                        })
+                    }
+                })
+            }
+        })
+
         owl.flipY = true
         owl.anims.play('3-owl-hurt')
     }
-    
-    shakeConfig.onComplete = () => {
-        Properties.scene.time.delayedCall(4000, () => {
-            Properties.scene.juice.shake(owl, {
-                onComplete: () => {
-                    owl.flipY = false
-                    owl.anims.play('3-owl-fly-vertical-fast')
 
-                    Properties.scene.time.delayedCall(500, () => {
-                        owl.fly()
-                    })
-                }
-            })
-        })
+    shakeConfig.onComplete = () => {
+        owlRecoverTimer.paused = false
     }
 
     // Owl collides with the ground
     let foreground = Properties.map.getLayer('foreground').tilemapLayer
-    Properties.scene.physics.add.collider(owl, foreground, (o, f) => {
+    owlGroundCollider = Properties.scene.physics.add.collider(owl, foreground, (o, f) => {
         Properties.scene.juice.shake(Properties.scene.cameras.main, shakeConfig)
         owlFlyTween.remove()
-        shootTimer.paused = true
+        owlShootTimer.paused = true
     })
+
+    // Owl collides with player
+    owlPlayerCollider = Properties.scene.physics.add.overlap(
+        owl,
+        Properties.player,
+        (o, p) => {
+            if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt') && o.body.touching.up && p.body.touching.down) {
+
+                o.hp -= 1
+
+                if (o.hp <= 0) {
+                    owlRecoverTimer.remove()
+                    owl.die()
+                }
+
+                // Jump
+                let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * p.displayHeight
+                p.setVelocityY(velocityY * 1.25)
+                // Set jump animation
+                playerSpriteJump()
+                // Update state
+                Properties.playerState.jumping = true
+            } else {
+                hitPlayer()
+                Properties.gameOver()
+            }
+        }
+    )
+
+    owl.die = () => {
+        owl.flipY = false
+
+        owl.anims.play('3-owl-hurt-fast')
+
+        Properties.scene.tweens.add({
+            targets: owl,
+            y: homeWalls[0].getTopLeft().y,
+            delay: 1000,
+            duration: 750,
+            onStart: () => {
+                // let spinXConfig = { duration: 500, repeat: 3 }
+                owl.setOrigin(0.5)
+                let spinXConfig = { duration: 250, repeat: 11 }
+                Properties.scene.juice.spinX(owl, true, spinXConfig)
+            },
+            onComplete: () => {
+                owlBounceTween = addBounceTween(owl)
+
+                owlFlyTween = Properties.scene.tweens.add({
+                    targets: owl,
+                    x: homeWalls[0].getTopLeft().x,
+                    duration: 2000,
+                    onComplete: () => {
+                        owlBounceTween.remove()
+                        owlGroundCollider.destroy()
+                        Properties.scene.juice.shake(Properties.scene.cameras.main)
+                        owl.flipY = true
+                        owl.body.setAllowGravity(true)
+
+                        homeWalls[0].body.enable = false
+                    }
+                })
+            }
+        })
+    }
 
     owl.fly = () => {
         // flies up, then patrols back and forth
@@ -489,7 +625,7 @@ function processOwl(owlImage) {
             onStart: () => { owl.anims.play('3-owl-fly-vertical') },
             onComplete: () => {
 
-                shootTimer.paused = false
+                owlShootTimer.paused = false
 
                 owl.anims.play('3-owl-fly-horizontal')
                 owlBounceTween = addBounceTween(owl)
@@ -503,13 +639,12 @@ function processOwl(owlImage) {
             }
         })
     }
-    
-    owl.groundPound = () => {
 
+    owl.groundPound = () => {
         owl.anims.play('3-owl-fly-horizontal-fast')
-        
+
         owlBounceTween.remove()
-        
+
         Properties.scene.time.delayedCall(500, () => {
             owl.body.setVelocityY(1200)
         })
@@ -517,19 +652,21 @@ function processOwl(owlImage) {
 
     owl.shoot = () => {
         let {x, y} = owl.getBottomCenter()
-        
-        if (Math.random() < 0.5) {
+
+        let owlBabiesAlive = owlBabyGroup.getFirstAlive()
+
+        if (owlBabiesAlive && Math.random() < 0.5) {
             owl.groundPound()
-        
+
         } else {
-            let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(2)
+            let egg = Properties.scene.physics.add.sprite(x, y, '3-owl-egg').setScale(5)
             egg.setOrigin(0.5, 0).refreshBody()
             egg.body.setVelocityY(200)
             // Egg collides with the ground
             let foreground = Properties.map.getLayer('foreground').tilemapLayer
             eggCollider = Properties.scene.physics.add.collider(egg, foreground, (egg, foreground) => {
                 let {x, y} = egg.getTopCenter()
-                let owlBaby = addOwlBaby(x, y)
+                addOwlBaby(x, y)
                 egg.destroy()
                 eggCollider.destroy()
             })
@@ -540,7 +677,7 @@ function processOwl(owlImage) {
     owl.body.setAllowGravity(false)
     // Set origin
     owl.setOrigin(0, 1).refreshBody()
-    
+
     // Create animations for the owl
     if (!Properties.scene.anims.exists('3-owl-fly-vertical')) {
         Properties.scene.anims.create({
@@ -588,6 +725,14 @@ function processOwl(owlImage) {
             key: '3-owl-hurt',
             frames: Properties.scene.anims.generateFrameNumbers('3-owl-hurt', { start: 0, end: 3 }),
             frameRate: 10,
+            repeat: -1
+        })
+    }
+    if (!Properties.scene.anims.exists('3-owl-hurt-fast')) {
+        Properties.scene.anims.create({
+            key: '3-owl-hurt-fast',
+            frames: Properties.scene.anims.generateFrameNumbers('3-owl-hurt', { start: 0, end: 3 }),
+            frameRate: 20,
             repeat: -1
         })
     }
@@ -655,11 +800,11 @@ function processRay(rayObject) {
     // Hide
     // ray.alpha = 0
     ray.alpha = 1
-    
+
 
     ray.angle = ray.angle - 1.5
-    
-    
+
+
     Properties.scene.tweens.add({
         targets: ray,
         angle: ray.angle + 5,
