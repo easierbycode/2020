@@ -568,7 +568,11 @@ function processOwl(owlImage) {
             }
             if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt')) {
 
-                if (o.body.touching.up && p.body.touching.down) {
+                if (o.body.touching.up && p.body.touching.down && !o.body.touching.left && !o.body.touching.right) {
+                    let shakeYConfig = { x: 0, y: 5, repeat: 4 }
+                    
+                    Properties.scene.juice.shake(o, shakeYConfig)
+                    
                     o.hp -= 1
 
                     if (o.hp <= 0) {
@@ -583,16 +587,23 @@ function processOwl(owlImage) {
                     playerSpriteJump()
                     // Update state
                     Properties.playerState.jumping = true
+                
                 } else {
+                    // Disable input
+                    Properties.inputEnabled = false
+
                     // just bounce off if hit owl side while he's hurt (no damage to player)
                     // Throw away player and play fall animation
                     let velocityX = Properties.player.flipX ? (-100 * -1) : (-100 * 1)
                     let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * p.displayHeight
-                    Properties.player.setVelocity(velocityX, velocityY)
+                    Properties.player.setVelocity(velocityX * 3, velocityY)
                     // Set jump animation
                     playerSpriteJump()
                     // Update state
                     Properties.playerState.jumping = true
+
+                    // Wait and enable input processing
+                    Properties.scene.time.delayedCall(500, () => Properties.inputEnabled = true)
                 }
             } else {
                 hitPlayer()
