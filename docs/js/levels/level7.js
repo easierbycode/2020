@@ -554,22 +554,46 @@ function processOwl(owlImage) {
         owl,
         Properties.player,
         (o, p) => {
-            if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt') && o.body.touching.up && p.body.touching.down) {
-
-                o.hp -= 1
-
-                if (o.hp <= 0) {
-                    owlRecoverTimer.remove()
-                    owl.die()
-                }
-
-                // Jump
+            if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt-fast')) {
+                // just bounce off if hit owl side while he's hurt (no damage to player)
+                // Throw away player and play fall animation
+                let velocityX = Properties.player.flipX ? (-100 * -1) : (-100 * 1)
                 let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * p.displayHeight
-                p.setVelocityY(velocityY * 1.25)
+                Properties.player.setVelocity(velocityX, velocityY)
                 // Set jump animation
                 playerSpriteJump()
                 // Update state
                 Properties.playerState.jumping = true
+                return
+            }
+            if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt')) {
+
+                if (o.body.touching.up && p.body.touching.down) {
+                    o.hp -= 1
+
+                    if (o.hp <= 0) {
+                        owlRecoverTimer.remove()
+                        owl.die()
+                    }
+
+                    // Jump
+                    let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * p.displayHeight
+                    p.setVelocityY(velocityY * 1.25)
+                    // Set jump animation
+                    playerSpriteJump()
+                    // Update state
+                    Properties.playerState.jumping = true
+                } else {
+                    // just bounce off if hit owl side while he's hurt (no damage to player)
+                    // Throw away player and play fall animation
+                    let velocityX = Properties.player.flipX ? (-100 * -1) : (-100 * 1)
+                    let velocityY = Constants.VELOCITY_Y_FROM_HEIGHT * p.displayHeight
+                    Properties.player.setVelocity(velocityX, velocityY)
+                    // Set jump animation
+                    playerSpriteJump()
+                    // Update state
+                    Properties.playerState.jumping = true
+                }
             } else {
                 hitPlayer()
                 Properties.gameOver()
