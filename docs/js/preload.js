@@ -7,6 +7,9 @@ const CDN_URL = '.'
 export function preloadAssets() {
     // Set scene
     Properties.scene = this
+
+    Properties.scene.load.plugin('rexvirtualjoystickplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js', true)
+
     // Set scene size
     Properties.setSceneSize()
     // Set camera
