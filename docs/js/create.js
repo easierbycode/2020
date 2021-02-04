@@ -182,45 +182,45 @@ function initKeyboard() {
     Properties.keyboard.A = wad.A
     Properties.keyboard.D = wad.D
 
-    Properties.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-        x: 120,
-        y: Properties.sceneSize.height - 100,
-        radius: 100,
-        base: this.add.circle(0, 0, 100, 0x888888).setDepth(Constants.DEPTH.important).setAlpha(0.5),
-        thumb: this.add.circle(0, 0, 50, 0xcccccc).setDepth(Constants.DEPTH.important).setAlpha(0.5),
-        dir: 'left&right',
-        forceMin: 16
-    })
+    // Properties.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+    //     x: 120,
+    //     y: Properties.sceneSize.height - 100,
+    //     radius: 100,
+    //     base: this.add.circle(0, 0, 100, 0x888888).setDepth(Constants.DEPTH.important).setAlpha(0.5),
+    //     thumb: this.add.circle(0, 0, 50, 0xcccccc).setDepth(Constants.DEPTH.important).setAlpha(0.5),
+    //     dir: 'left&right',
+    //     forceMin: 16
+    // })
 }
 
 function createTouchEvents() {
 
-    Properties.joyStick.on('update', () => {
-        var cursorKeys = Properties.joyStick.createCursorKeys();
-        // for (var name in cursorKeys) {
-        for (var name of ['left', 'right']) {
-            Properties.touches[name] = cursorKeys[name].isDown
-        }
+    // Properties.joyStick.on('update', () => {
+    //     var cursorKeys = Properties.joyStick.createCursorKeys();
+    //     // for (var name in cursorKeys) {
+    //     for (var name of ['left', 'right']) {
+    //         Properties.touches[name] = cursorKeys[name].isDown
+    //     }
 
-        var joyStick = Properties.joyStick;
-        if (joyStick.enable && joyStick.force > 100) {
-            let tolerance = 100 / joyStick.force;
-            joyStick.setPosition(
-                joyStick.pointer.position.x - joyStick.forceX * tolerance,
-                joyStick.pointer.position.y - joyStick.forceY * tolerance
-            )
+    //     var joyStick = Properties.joyStick;
+    //     if (joyStick.enable && joyStick.force > 100) {
+    //         let tolerance = 100 / joyStick.force;
+    //         joyStick.setPosition(
+    //             joyStick.pointer.position.x - joyStick.forceX * tolerance,
+    //             joyStick.pointer.position.y - joyStick.forceY * tolerance
+    //         )
 
-            joyStick.thumb.x = joyStick.pointer.position.x;
-            joyStick.thumb.y = joyStick.pointer.position.y;
-        }
-    })
+    //         joyStick.thumb.x = joyStick.pointer.position.x;
+    //         joyStick.thumb.y = joyStick.pointer.position.y;
+    //     }
+    // })
 
-    // let left = document.getElementById('left')
-    // let right = document.getElementById('right')
+    let left = document.getElementById('left')
+    let right = document.getElementById('right')
     let up = document.getElementById('up')
 
-    // for (const control of [left, right, up]) {
-    for (const control of [up]) {
+    for (const control of [left, right, up]) {
+    // for (const control of [up]) {
         // Activate on touch start
         control.addEventListener('touchstart', function(e) {
             e.preventDefault()
