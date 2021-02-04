@@ -575,6 +575,17 @@ function processOwl(owlImage) {
                     
                     o.hp -= 1
 
+                    if (navigator.vibrate) {
+
+                        let vibe = []
+
+                        for (var i = o.hp; i > 0; i--) {
+                            vibe.push(100, 30)
+                        }
+
+                        window.navigator.vibrate(vibe)
+                    } 
+
                     if (o.hp <= 0) {
                         owlRecoverTimer.remove()
                         owl.die()
