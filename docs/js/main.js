@@ -10,6 +10,8 @@ import phaserJuice from './phaserJuicePlugin.min.js'
 const WIDTH = window.outerWidth, HEIGHT = window.outerHeight
 // Check ratio from URL
 let urlRatio = parseFloat(new URL(window.location.href).searchParams.get('ratio'))
+// Check debug from URL
+let urlDebug = parseFloat(new URL(window.location.href).searchParams.get('debug'))
 // Height is constant - adjust width and scale
 const GAME_HEIGHT = 640
 // Game container and loading block objects
@@ -36,7 +38,7 @@ if (Constants.IS_TOUCH_DEVICE) {
                 // Check from URL
                 const GAME_RATIO = urlRatio ? urlRatio : finalRatio
                 Properties.gameRatio = GAME_RATIO
-                if (this.game.config.physics.arcade.debug)  window.alert(GAME_RATIO);
+                if (urlDebug)  window.alert(GAME_RATIO);
                 const GAME_WIDTH = GAME_HEIGHT * GAME_RATIO
                 // Define scale from current window inner width
                 const SCALE = window.innerWidth / GAME_WIDTH
