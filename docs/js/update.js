@@ -6,7 +6,7 @@ import { playerSpriteJump, playerSpriteRun, playerSpriteStand } from './helpers.
 import Level6 from './levels/level6.js'
 
 export function processEachStep(time, delta) {
-    if (this.game.config.physics.arcade.debug)  Properties.fpsText.setText(`FPS: ${Math.trunc(1000/delta)}, RATIO: ${Properties.gameRatio}`)
+    if (this.game.config.physics.arcade.debug)  Properties.fpsText.setText(`FPS: ${Math.trunc(1000/delta)}, RATIO: ${Properties.gameRatio.toFixed(2)}`)
     if (Properties.gameIsOver || !Properties.inputEnabled) { return false }
 
     // Get player
