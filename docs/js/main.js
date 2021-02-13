@@ -51,6 +51,7 @@ if (Constants.IS_TOUCH_DEVICE) {
 } else {
     // Usual computers – leave 3.5 ratio
     const GAME_RATIO = urlRatio ? urlRatio : 3.5
+    Properties.gameRatio = GAME_RATIO
     const GAME_WIDTH = GAME_HEIGHT * GAME_RATIO
     // Define scale from current window inner width
     const SCALE = window.innerWidth / GAME_WIDTH
