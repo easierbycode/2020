@@ -299,7 +299,7 @@ function processHomeWall(wall) {
 function processOwl(owlImage) {
     let {x, y} = owlImage
     owlImage.destroy()
-    owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(2)
+    owl = Properties.scene.physics.add.sprite(x, y, '3-owl').setScale(5)
     // remove gravity
     owl.body.setAllowGravity(false)
     // Set origin
