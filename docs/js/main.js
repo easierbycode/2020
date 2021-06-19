@@ -94,6 +94,9 @@ function initGame(gameWidth, gameHeight, scale) {
         },
         render: {
             pixelArt: true
+        },
+        input: {
+            gamepad: true
         }
     }
 

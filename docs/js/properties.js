@@ -14,6 +14,8 @@ const PROPERTIES = {
     map: undefined,
     // Player object
     player: undefined,
+    // Gamepad
+    gamepad: undefined,
     // Main camera
     camera: undefined,
     // Keyboard keys
@@ -69,13 +71,13 @@ const PROPERTIES = {
     touches: { left: false, right: false, up: false },
     // Key states
     holdsRight: function() {
-        return this.keyboard.right.isDown || this.keyboard.D.isDown || this.touches.right
+        return (this.gamepad && this.gamepad.right) || this.keyboard.right.isDown || this.keyboard.D.isDown || this.touches.right
     },
     holdsLeft: function() {
-        return this.keyboard.left.isDown || this.keyboard.A.isDown || this.touches.left
+        return (this.gamepad && this.gamepad.left) || this.keyboard.left.isDown || this.keyboard.A.isDown || this.touches.left
     },
     holdsUp: function() {
-        return this.keyboard.space.isDown || this.keyboard.up.isDown || this.keyboard.W.isDown || this.touches.up
+        return (this.gamepad && (this.gamepad.up || this.gamepad.A)) || this.keyboard.space.isDown || this.keyboard.up.isDown || this.keyboard.W.isDown || this.touches.up
     },
     // Player stands
     playerStands: function() { return this.player.body.onFloor() || this.player.body.touching.down },

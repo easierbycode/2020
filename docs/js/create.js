@@ -32,6 +32,8 @@ export function initObjects() {
     initPhysics.call(this)
     // Init keyboard events
     initKeyboard.call(this)
+    // Init gamepad
+    initGamepad.call(this)
 
     if (!Constants.DEBUG) {
         let urlCheckpoint = parseInt(new URL(window.location.href).searchParams.get('checkpoint'))
@@ -191,6 +193,13 @@ function initKeyboard() {
     //     dir: 'left&right',
     //     forceMin: 16
     // })
+}
+
+function initGamepad() {
+    this.input.gamepad.once('down', ( gamepad ) => {
+        console.log(gamepad)
+        Properties.gamepad = gamepad
+    })
 }
 
 function createTouchEvents() {
