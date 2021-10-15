@@ -6,7 +6,7 @@ import { fadeInOutTitle, playerSpriteThrow } from '../helpers.js'
 // Additional processing of sprites from tilemap
 const PROCESSING = {
     '0-ball': saveBall,
-    '0-claire': saveClaire
+    '0-candle': updateCandle,
 }
 
 // Tennis ball sprite
@@ -113,4 +113,26 @@ function saveClaire(image) {
             repeat: -1
         })
     }
+}
+function updateCandle( candleImage ) {
+    let {x, y}          = candleImage
+    let candleSprite    = Properties.scene.physics.add.sprite( x, y, '0-candle' )
+    candleImage.destroy()
+    // Set origin and refresh body
+    candleSprite.setOrigin( 0, 1 ).refreshBody()
+    candleSprite.body.setAllowGravity( false )
+    candleSprite.anims.create({
+        key: '0-candle.default',
+        frames: Properties.scene.anims.generateFrameNumbers( '0-candle', {start: 4, end: 4} ),
+        frameRate: 1
+    })
+    candleSprite.anims.create({
+        key: '0-candle.burn',
+        frames: Properties.scene.anims.generateFrameNumbers( '0-candle', {start: 0, end: 3} ),
+        frameRate: 10,
+        repeat: -1
+    })
+    candleSprite.play( '0-candle.default' )
+
+    Properties.candle  = candleSprite
 }
