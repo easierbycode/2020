@@ -2,6 +2,106 @@ import AudioManager from '../audio.js'
 import Constants from '../constants.js'
 import Properties from '../properties.js'
 import { clearScene, fadeInOutTitle, fadeOut } from '../helpers.js'
+import {
+    Bullet,
+    Weapon,
+    WeaponPlugin,
+    consts
+} from "https://cdn.skypack.dev/phaser3-weapon-plugin";
+
+class SodaBullet extends Bullet {
+
+    constructor( scene, x, y, key = '1-soda', frame ) {
+            super( scene, x, y, key, frame );
+    }
+
+    kill() {
+            let {
+                x, 
+                y
+            }                       = this.getRightCenter()
+            let {rotation}          = this
+            let {impacts}           = this.getData( 'bulletManager' )
+
+            super.kill()
+
+            // TODO: double check depth is correct
+            let impact              = impacts.get( x, y ).setVisible( true ).setActive( true ).setRotation( rotation ).setDepth( 2 )
+
+            impact.on(
+                'animationcomplete-default',
+                () => impacts.killAndHide( impact )
+            )
+            
+            impact.play( 'default' )
+    }
+
+}
+
+class BulletImpact extends Phaser.GameObjects.Sprite {
+
+    constructor(
+        scene, 
+        x, 
+        y, 
+        key = '1-soda-impact'
+    ) {
+        super( scene, x, y, key )
+
+        this.anims.create({
+            key: 'default',
+            frames: this.anims.generateFrameNames( '1-soda-impact' ),
+            frameRate: 30
+        })
+    }
+
+}
+
+class SodaWeapon extends Weapon {
+
+  constructor(
+      sodaMachine,
+      scene,
+      bulletLimit   = 20,
+      key           = '1-soda',
+      frame         = '',
+      group
+    ) {
+          super( scene, bulletLimit, key, frame );
+        
+          this.impacts = scene.add.group({ classType: BulletImpact });
+        
+          this.bulletClass              = SodaBullet
+          this.bulletSpeed              = 555
+          this.bulletRotateToVelocity   = true
+          this.bulletKillType           = consts.KillType.KILL_LIFESPAN
+          this.bulletLifespan           = 600  // 750
+
+          // `this.bullets` exists only after createBullets()
+          this.createBullets()
+          // createBullets does not create bulletClass instances, so
+          // we remove and recreate with correct classType
+          this.bullets.clear()
+
+          this.bullets.createMultipleCallback = ( items ) => {
+                items.forEach( item => {
+                      item.setData( 'bulletManager', this )
+                      item.body.setBounce( 0.6, 0.9 )
+                });
+          }
+
+          this.bullets.createMultiple({
+                classType: SodaBullet,
+                key: '1-soda',
+                repeat: this.bullets.maxSize-1,
+                active: false,
+                visible: false
+          })
+
+          this.trackSprite( sodaMachine, 0, 0, true )
+    }
+
+}
 
 // Forest images ID to be replaced
 const FOREST_IMAGE_IDS = [88, 96, 90]
