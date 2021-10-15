@@ -171,6 +171,8 @@ function preloadButtons() {
 
 function preloadLevel0() {
     this.load.image('0-ball', `${CDN_URL}/assets/level0/tennisball.png`)
+    this.load.image('0-test-tube-blue', `${CDN_URL}/assets/level0/test-tube-blue.png`)
+    this.load.image('0-test-tube-red', `${CDN_URL}/assets/level0/test-tube-red.png`)
 
     this.load.spritesheet('0-bird', `${CDN_URL}/assets/level0/godpigeon.png`, {
         frameWidth: 38, frameHeight: 25
@@ -207,6 +209,11 @@ function preloadLevel1() {
     this.load.image('1-bush1', `${CDN_URL}/assets/level1/bush1.png`)
     this.load.image('1-bush2', `${CDN_URL}/assets/level1/bush2.png`)
     this.load.image( '1-soda', `${CDN_URL}/assets/level1/soda.png` )
+    this.load.image( '1-soda-machine', `${CDN_URL}/assets/level1/soda-machine.png` )
+    this.load.image( '1-test-tube', `${CDN_URL}/assets/level1/test-tube.png` )
+    this.load.spritesheet('1-cannon', `${CDN_URL}/assets/level1/cannon.png`, {
+        frameWidth: 182, frameHeight: 102
+    })
     // Fire sprites
     this.load.spritesheet('1-fire1', `${CDN_URL}/assets/level1/fire1.png`, {
         frameWidth: 64, frameHeight: 92, margin: 1, spacing: 2
@@ -216,6 +223,9 @@ function preloadLevel1() {
     })
     this.load.spritesheet('1-fire3', `${CDN_URL}/assets/level1/fire3.png`, {
         frameWidth: 124, frameHeight: 160, margin: 1, spacing: 2
+    })
+    this.load.spritesheet('1-scientist-chick', `${CDN_URL}/assets/level1/scientist-chick.png`, {
+        frameWidth: 120, frameHeight: 135
     })
     this.load.spritesheet('1-soda-impact', `${CDN_URL}/assets/level1/soda-impact.png`, {
         frameWidth: 83, frameHeight: 66
