@@ -6,6 +6,7 @@ import { fadeInOutTitle, playerSpriteThrow } from '../helpers.js'
 // Additional processing of sprites from tilemap
 const PROCESSING = {
     '0-ball': saveBall,
+    '0-claire': saveClaire,
     '0-candle': updateCandle,
 }
 
