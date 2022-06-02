@@ -71,13 +71,13 @@ const PROPERTIES = {
     touches: { left: false, right: false, up: false },
     // Key states
     holdsRight: function() {
-        return (this.gamepad && this.gamepad.right) || this.keyboard.right.isDown || this.keyboard.D.isDown || this.touches.right
+        return (this.gamepad && this.gamepad.right || this.gamepad && this.gamepad.axes[0].value == 1) || this.keyboard.right.isDown || this.keyboard.D.isDown || this.touches.right
     },
     holdsLeft: function() {
-        return (this.gamepad && this.gamepad.left) || this.keyboard.left.isDown || this.keyboard.A.isDown || this.touches.left
+        return (this.gamepad && this.gamepad.left || this.gamepad && this.gamepad.axes[0].value == -1) || this.keyboard.left.isDown || this.keyboard.A.isDown || this.touches.left
     },
     holdsUp: function() {
-        return (this.gamepad && (this.gamepad.up || this.gamepad.A)) || this.keyboard.space.isDown || this.keyboard.up.isDown || this.keyboard.W.isDown || this.touches.up
+        return (this.gamepad && (this.gamepad.up || this.gamepad.A || this.gamepad.X)) || this.keyboard.space.isDown || this.keyboard.up.isDown || this.keyboard.W.isDown || this.touches.up
     },
     // Player stands
     playerStands: function() { return this.player.body.onFloor() || this.player.body.touching.down },
