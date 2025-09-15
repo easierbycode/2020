@@ -7,7 +7,7 @@ import {
     Weapon,
     WeaponPlugin,
     consts
-} from "https://cdn.skypack.dev/phaser3-weapon-plugin";
+} from 'https://esm.sh/phaser3-weapon-plugin';
 
 class SodaBullet extends Bullet {
 

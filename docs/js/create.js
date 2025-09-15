@@ -101,7 +101,8 @@ function createMap() {
     // Save to properties
     Properties.map = map
     // Foreground
-    let foreground = map.createStaticLayer('foreground', tileset, 0, 0)
+    // Phaser 3.90+: use createLayer (replaces createStaticLayer / createDynamicLayer)
+    let foreground = map.createLayer('foreground', tileset, 0, 0)
     foreground.setDepth(Constants.DEPTH.foregroundMain)
     // Update camera and world bounds
     Properties.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
