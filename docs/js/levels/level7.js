@@ -7,6 +7,24 @@ import {
     playerSpriteJump, playerSpriteRun, playerSpriteStand, processCorona, processMask, hitPlayer
 } from '../helpers.js'
 
+// Helper: safely get current animation key across Phaser versions
+function getCurrentAnimKey(obj) {
+    if (!obj || !obj.anims) return null
+    // Prefer currentAnim.key when available
+    if (obj.anims.currentAnim && obj.anims.currentAnim.key) {
+        return obj.anims.currentAnim.key
+    }
+    // Fallback to getName if provided by this Phaser version
+    if (typeof obj.anims.getName === 'function') {
+        return obj.anims.getName()
+    }
+    // As a last resort, try getCurrentKey if it exists (newer Phaser)
+    if (typeof obj.anims.getCurrentKey === 'function') {
+        return obj.anims.getCurrentKey()
+    }
+    return null
+}
+
 // Additional processing of sprites from tilemap
 const PRE_PROCESSING = {
     '7-smoke': processSmoke,
@@ -554,7 +572,7 @@ function processOwl(owlImage) {
         owl,
         Properties.player,
         (o, p) => {
-            if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt-fast')) {
+            if (o.anims.isPlaying && getCurrentAnimKey(o) === '3-owl-hurt-fast') {
                 // just bounce off if hit owl side while he's hurt (no damage to player)
                 // Throw away player and play fall animation
                 let velocityX = Properties.player.flipX ? (-100 * -1) : (-100 * 1)
@@ -566,7 +584,7 @@ function processOwl(owlImage) {
                 Properties.playerState.jumping = true
                 return
             }
-            if ((o.anims.isPlaying && o.anims.getCurrentKey() == '3-owl-hurt')) {
+            if (o.anims.isPlaying && getCurrentAnimKey(o) === '3-owl-hurt') {
 
                 if (o.body.touching.up && p.body.touching.down && !o.body.touching.left && !o.body.touching.right) {
                     let shakeYConfig = { x: 0, y: 5, repeat: 4 }
